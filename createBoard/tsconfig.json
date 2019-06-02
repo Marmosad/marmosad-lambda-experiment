@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "outDir": "./",
+    "noImplicitAny": false,
+    "module": "es5",
+    "target": "es5",
+    "jsx": "react",
+    "allowJs": true
+  },
+
+  "exclude": [
+    "node_modules"
+  ]
+}
