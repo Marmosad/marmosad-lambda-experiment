@@ -1,0 +1,23 @@
+{
+  "name": "marmosad-runtime-layer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "request": "^2.88.0",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^12.0.4",
+    "@types/uuid": "^3.4.4",
+    "aws-sdk": "^2.468.0",
+    "ts-loader": "^6.0.2",
+    "typescript": "^3.5.1"
+  }
+}
