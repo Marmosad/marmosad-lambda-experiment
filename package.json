@@ -1,0 +1,11 @@
+{
+  "name": "marmosad-lambda-experiment",
+  "version": "1.0.0",
+  "dependencies": {
+    "request": "^2.88.0",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.468.0"
+  }
+}

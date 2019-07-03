@@ -7,7 +7,7 @@ module.exports = async function handleStart(board) {
     let players = board['Item']['players'];
     let updatePromises = [];
 
-    if (board['Item'].state === 0) {
+    if (board['Item'].state !== 0) {
         return {};
     }
 
@@ -51,7 +51,7 @@ module.exports = async function handleStart(board) {
             }
         }).promise());
     }
-    
+
     let params = {
             FunctionName: 'draw',
             InvocationType: 'RequestResponse',
@@ -61,13 +61,13 @@ module.exports = async function handleStart(board) {
                 "numCards": 1
             })
         };
-    
+
     updatePromises.push(lambda.invoke(params, async function (err, data) {
             if (err) {
                 throw err;
             }
             else {
-                console.log("black card drawn:", data)
+                console.log("black card drawn:", JSON.parse(data.Payload))
                 let params = {
                     TableName: 'boards',
                     Key: {
@@ -78,9 +78,9 @@ module.exports = async function handleStart(board) {
                         '#b': "blackCard",
                         '#s' : 'state'
                     },
-                    UpdateExpression: "set #a.#b = :c #s = :s",
+                    UpdateExpression: "set #a.#b = :c, #s = :s",
                     ExpressionAttributeValues: {
-                        ":c": data[0],
+                        ":c": JSON.parse(data.Payload)[0],
                         ":s": 1
                     },
                     ReturnValues: "UPDATED_NEW"
@@ -90,7 +90,7 @@ module.exports = async function handleStart(board) {
                 await docClient.update(params).promise();
             }
         }).promise());
-    
+
     await Promise.all(updatePromises);
 
     console.log('new player object on board', board, players)

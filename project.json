@@ -1,0 +1,10 @@
+{
+  "name": "marmosad_serverless",
+  "description": "marmosad backend, but serverless",
+  "memory": 128,
+  "timeout": 5,
+  "role": "arn:aws:iam::466758226636:role/MarmosadSocket",
+  "environment": {
+  },
+  "runtime": "nodejs10.x"
+}

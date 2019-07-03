@@ -66,14 +66,15 @@ exports.handler = async (event) => {
     let connection = await docClient.get({TableName: "connections", Key: {"connectionId": connectionId}}).promise();
     let board = await docClient.get({TableName: "boards", Key: {"boardId": connection.Item.boardId}}).promise();
 
-
     switch (gameEvent) {
         case 'start':
+            console.log("current game event, ", gameEvent);
             await handleStart(board);
             board = await docClient.get({TableName: "boards", Key: {"boardId": connection.Item.boardId}}).promise();
             await updateDisplay(board.Item, send);
             break;
         case 'chat':
+            console.log("current game event, ", gameEvent);
             await handleChat(board.Item, send, JSON.parse(event['body'])['message'], connectionId);
             break;
 
