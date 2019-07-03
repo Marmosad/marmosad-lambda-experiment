@@ -77,7 +77,10 @@ exports.handler = async (event) => {
             console.log("current game event, ", gameEvent);
             await handleChat(board.Item, send, JSON.parse(event['body'])['message'], connectionId);
             break;
-
+        case 'nudge':
+            board = await docClient.get({TableName: "boards", Key: {"boardId": connection.Item.boardId}}).promise();
+            await updateDisplay(board.Item, send);
+            break;
         default:
             break;
     }

@@ -3,6 +3,7 @@
   "description": "marmosad backend, but serverless",
   "memory": 128,
   "timeout": 5,
+  "handler": "index.handler",
   "role": "arn:aws:iam::466758226636:role/MarmosadSocket",
   "environment": {
   },
