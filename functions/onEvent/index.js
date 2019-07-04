@@ -6,6 +6,7 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 const handleStart = require('./start');
 const handleChat = require('./chat');
 const updateDisplay = require('./updateDisplay');
+const handleSubmit = require('./submit');
 let apigwManagementApi;
 let send = async (connectionId, data) => {
     await apigwManagementApi.postToConnection({ConnectionId: connectionId, Data: data}).promise();
@@ -23,7 +24,6 @@ async function extracted(event) {
     await docClient.put({TableName: "connections", Item: JSON.parse(JSON.stringify(connection))}).promise();
     let board = await docClient.get({TableName: "boards", Key: {"boardId": connection.boardId}}).promise();
     let players = board['Item']['players'];
-    let count = board['Item']['numberOfPlayers'] + 1;
     players[connection.connectionId] = {'name': connection.name, 'hand': [], connectionId: connection.connectionId};
 
     //update params
@@ -33,10 +33,18 @@ async function extracted(event) {
             "boardId": board.Item.boardId
         },
 
-        UpdateExpression: "set players = :p, numberOfPlayers = :c",
+        UpdateExpression: "set #a.#b = :p, #n = #n + :i",
+        ExpressionAttributeNames: {
+            '#a': 'players',
+            '#b': connection.connectionId,
+            '#n': "numberOfPlayers"
+        },
         ExpressionAttributeValues: {
-            ":p": players,
-            ":c": count
+            ":p": {
+                'name': connection.name, 'hand': [], "connectionId": connection.connectionId,
+                "played": false
+            },
+            ":i": 1
         },
         ReturnValues: "UPDATED_NEW"
     };
@@ -65,22 +73,25 @@ exports.handler = async (event) => {
     const connectionId = event['requestContext']['connectionId'];
     let connection = await docClient.get({TableName: "connections", Key: {"connectionId": connectionId}}).promise();
     let board = await docClient.get({TableName: "boards", Key: {"boardId": connection.Item.boardId}}).promise();
+    console.log("current game event, ", gameEvent);
 
     switch (gameEvent) {
         case 'start':
-            console.log("current game event, ", gameEvent);
             await handleStart(board);
             board = await docClient.get({TableName: "boards", Key: {"boardId": connection.Item.boardId}}).promise();
             await updateDisplay(board.Item, send);
             break;
         case 'chat':
-            console.log("current game event, ", gameEvent);
             await handleChat(board.Item, send, JSON.parse(event['body'])['message'], connectionId);
             break;
         case 'nudge':
             board = await docClient.get({TableName: "boards", Key: {"boardId": connection.Item.boardId}}).promise();
             await updateDisplay(board.Item, send);
             break;
+        case 'submit':
+
+            board = await docClient.get({TableName: "boards", Key: {"boardId": connection.Item.boardId}}).promise();
+            await updateDisplay(board.Item, send);
         default:
             break;
     }

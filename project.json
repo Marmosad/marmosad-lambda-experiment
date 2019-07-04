@@ -4,6 +4,7 @@
   "memory": 128,
   "timeout": 5,
   "handler": "index.handler",
+  "profile": "marmosad",
   "role": "arn:aws:iam::466758226636:role/MarmosadSocket",
   "environment": {
   },

@@ -1,5 +1,5 @@
 let AWS = require('aws-sdk');
-AWS.config.update({ region: 'us-east-1' });
+AWS.config.update({region: 'us-east-1'});
 const docClient = new AWS.DynamoDB.DocumentClient();
 let lambda = new AWS.Lambda();
 
@@ -24,9 +24,8 @@ module.exports = async function handleStart(board) {
         updatePromises.push(lambda.invoke(params, async function (err, data) {
             if (err) {
                 throw err;
-            }
-            else {
-                console.log(data)
+            } else {
+                console.log(data);
                 players[player].hand = JSON.parse(data.Payload);
 
                 let params = {
@@ -46,52 +45,71 @@ module.exports = async function handleStart(board) {
                     ReturnValues: "UPDATED_NEW"
                 };
 
-                console.log('new player object on board', board, players)
+                console.log('new player object on board', board, players);
                 await docClient.update(params).promise();
             }
         }).promise());
     }
 
     let params = {
-            FunctionName: 'draw',
-            InvocationType: 'RequestResponse',
-            Payload: JSON.stringify({
-                "boardId": board['Item'].boardId,
-                "cardType": "blackCard",
-                "numCards": 1
-            })
-        };
+        FunctionName: 'draw',
+        InvocationType: 'RequestResponse',
+        Payload: JSON.stringify({
+            "boardId": board['Item'].boardId,
+            "cardType": "blackCard",
+            "numCards": 1
+        })
+    };
 
     updatePromises.push(lambda.invoke(params, async function (err, data) {
-            if (err) {
-                throw err;
-            }
-            else {
-                console.log("black card drawn:", JSON.parse(data.Payload))
-                let params = {
-                    TableName: 'boards',
-                    Key: {
-                        "boardId": board.Item.boardId
-                    },
-                    ExpressionAttributeNames: {
-                        '#a': 'display',
-                        '#b': "blackCard",
-                        '#s' : 'state'
-                    },
-                    UpdateExpression: "set #a.#b = :c, #s = :s",
-                    ExpressionAttributeValues: {
-                        ":c": JSON.parse(data.Payload)[0],
-                        ":s": 1
-                    },
-                    ReturnValues: "UPDATED_NEW"
-                };
+        if (err) {
+            throw err;
+        } else {
+            console.log("black card drawn:", JSON.parse(data.Payload));
+            let params = {
+                TableName: 'boards',
+                Key: {
+                    "boardId": board.Item.boardId
+                },
+                ExpressionAttributeNames: {
+                    '#a': 'display',
+                    '#b': "blackCard",
+                    '#s': 'state',
+                    '#j': 'currentJudge'
+                },
+                UpdateExpression: "set #a.#b = :c, #s = :s, #j = :j",
+                ExpressionAttributeValues: {
+                    ":c": JSON.parse(data.Payload)[0],
+                    ":s": 1,
+                    ":j": pickJudge(board.Item.players, board.Item.currentJudge)
+                },
+                ReturnValues: "UPDATED_NEW"
+            };
 
-                console.log('new player object on board', board, players)
-                await docClient.update(params).promise();
-            }
-        }).promise());
+            console.log('new player object on board', board, players);
+            await docClient.update(params).promise();
+        }
+    }).promise());
 
     await Promise.all(updatePromises);
 
     console.log('new player object on board', board, players)
+};
+
+
+function pickJudge(players, currentJudge) {
+    console.log(players);
+    let playerIterator = Object.keys(players);
+    let nextJudge;
+    let i = 0;
+    while (currentJudge !== players[playerIterator[i]] && i < playerIterator.length) {
+        i++;
+    }
+
+    if (i === playerIterator.length)
+        nextJudge = playerIterator[0];
+    else
+        nextJudge = playerIterator[i + 1];
+    console.log(playerIterator, nextJudge);
+    return nextJudge
 }
