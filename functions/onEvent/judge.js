@@ -1,12 +1,13 @@
 let AWS = require('aws-sdk');
-AWS.config.update({ region: 'us-east-1' });
+AWS.config.update({region: 'us-east-1'});
 const docClient = new AWS.DynamoDB.DocumentClient();
 
-module.exports = async function handleSubmit(board, card, player) {
-    if (board.currentJudge === player.connectionId){
-        console.log('judge attempted to play white card');
+module.exports = async function handleJudge(board, card, player) {
+    if (board.currentJudge !== player.connectionId) {
+        console.log('None judge tried to judge');
         return;
     }
+
     if (player.played) {
         console.log('can\'t play, buddy');
         return;
@@ -15,22 +16,16 @@ module.exports = async function handleSubmit(board, card, player) {
     if (board.state !== 1) {
         console.log("not the right phase")
     }
-    console.log("started handling submit event: ", card, player);
-    let playedCard = {};
+
     let toPlay = -1;
-    console.log(player.hand)
-    for (let i in player.hand){
-        console.log(i);
+    for (let i in player.hand) {
         if (player.hand[i].cardPack === card.cardPack && player.hand.cardId === card.cardId) {
             toPlay = i;
         }
     }
-    console.log("toplay", toPlay)
     if (toPlay >= 0) {
-        playedCard = player.hand[toPlay];
-        player.hand.splice(toPlay, 1);
-    }
-    else
+        player.hand.splice(i, 1)
+    } else
         return;
     player.played = true;
 
@@ -41,21 +36,25 @@ module.exports = async function handleSubmit(board, card, player) {
             "boardId": board.Item.boardId
         },
 
-        UpdateExpression: "set #a.#b = :p, add #d.#w :c",
+        UpdateExpression: "set #a.#b = :p, add numberOfPlayers :i",
         expressionAttributeNames: {
             '#a': 'players',
             '#b': player.connectionId,
-            '#d': 'display',
-            '#w': 'whiteCards'
+            '#s': 'status'
         },
         ExpressionAttributeValues: {
-            ":p": player,
-            ":c": playedCard
+            ":p": player
         },
         ReturnValues: "UPDATED_NEW"
     };
+    //
+    // UpdateExpression = "SET map.#number = :string"
+    // ExpressionAttributeNames = { "#number" : "1" }
+    // ExpressionAttributeValues = { ":string" : "the string to store in the map at key value 1" }
+    // ConditionExpression = "attribute_not_exists(map.#number)"
 
-    console.log(player);
+    console.log('new player object on board', board, players);
     await docClient.update(params).promise();
+
 
 };

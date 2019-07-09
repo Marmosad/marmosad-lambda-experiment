@@ -1,5 +1,5 @@
 const AWS = require('aws-sdk');
-AWS.config.update({ region: 'us-east-1' });
+AWS.config.update({region: 'us-east-1'});
 const docClient = new AWS.DynamoDB.DocumentClient();
 
 
@@ -23,16 +23,16 @@ exports.handler = function (event, context, callback) {
             }
         };
         for (let cp of board.Item.cardPacks['values']) {
-            cardPackQuery.RequestItems.cardPacks.Keys.push({ "cardPack": cp })
+            cardPackQuery.RequestItems.cardPacks.Keys.push({"cardPack": cp})
         }
-        docClient.batchGet(cardPackQuery).promise().then(async(data) => {
+        docClient.batchGet(cardPackQuery).promise().then(async (data) => {
             cardPacks = data;
             let cards = [];
             let toFetch = [];
             for (let i = 0; i < event.numCards; i++) {
                 let [cardPack, cardId] = genCard(cardPacks.Responses.cardPacks, board.Item.drawnCards, event.cardType);
 
-                board.Item.drawnCards[cardPack][event.cardType == "whiteCard" ? "whiteCards" : "blackCards"]['values']
+                board.Item.drawnCards[cardPack][event.cardType == "whiteCard" ? "whiteCards" : "blackCards"]['values'];
 
                 toFetch.push(docClient.get({
                     TableName: cardPack,
@@ -69,13 +69,16 @@ exports.handler = function (event, context, callback) {
             };
             callback(null, cards);
 
-            console.log(updateBoard)
+            console.log(updateBoard);
             let a = await docClient.update(updateBoard).promise();
             console.log(a)
 
-        }).catch(e => { callback(e) });
-    }).catch(e => { callback(e) });
-
+        }).catch(e => {
+            callback(e)
+        });
+    }).catch(e => {
+        callback(e)
+    });
 
 
 };
@@ -89,4 +92,4 @@ const genCard = (cp, drawn, cardType) => {
     }
 
     return [cp[cpIndex]['cardPack'], card]
-}
+};

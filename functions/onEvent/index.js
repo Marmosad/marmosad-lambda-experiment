@@ -7,6 +7,7 @@ const handleStart = require('./start');
 const handleChat = require('./chat');
 const updateDisplay = require('./updateDisplay');
 const handleSubmit = require('./submit');
+const handleJudge = require('./judge');
 let apigwManagementApi;
 let send = async (connectionId, data) => {
     await apigwManagementApi.postToConnection({ConnectionId: connectionId, Data: data}).promise();
@@ -89,9 +90,15 @@ exports.handler = async (event) => {
             await updateDisplay(board.Item, send);
             break;
         case 'submit':
-
+            await handleSubmit(board.Item, JSON.parse(event['body'])['card'], JSON.parse(event['body'])["players"][connectionId]);
             board = await docClient.get({TableName: "boards", Key: {"boardId": connection.Item.boardId}}).promise();
             await updateDisplay(board.Item, send);
+            break;
+        case 'judge':
+            await handleJudge(board.Item, JSON.parse(event['body'])['card'], connection.Item.boardId);
+            board = await docClient.get({TableName: "boards", Key: {"boardId": connection.Item.boardId}}).promise();
+            await updateDisplay(board.Item, send);
+            break;
         default:
             break;
     }
