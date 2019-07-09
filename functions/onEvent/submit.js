@@ -18,14 +18,14 @@ module.exports = async function handleSubmit(board, card, player) {
     console.log("started handling submit event: ", card, player);
     let playedCard = {};
     let toPlay = -1;
-    console.log(player.hand)
+    console.log(player.hand);
     for (let i in player.hand){
-        console.log(i);
+        console.log(i, card, player.hand[i]);
         if (player.hand[i].cardPack === card.cardPack && player.hand.cardId === card.cardId) {
             toPlay = i;
         }
     }
-    console.log("toplay", toPlay)
+    console.log("toplay", toPlay);
     if (toPlay >= 0) {
         playedCard = player.hand[toPlay];
         player.hand.splice(toPlay, 1);

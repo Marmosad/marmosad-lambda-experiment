@@ -46,9 +46,10 @@ exports.handler = function (event, context, callback) {
 
             cards = await Promise.all(toFetch);
             cards = cards.map((card, index) => {
+                console.log(cards[index]);
                 return {...card['Item'], "cardPack": cards[index][0]}
             });
-
+            console.log(cards);
             let updateBoard = {
                 TableName: 'boards',
                 Key: {

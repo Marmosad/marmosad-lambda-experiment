@@ -90,7 +90,7 @@ exports.handler = async (event) => {
             await updateDisplay(board.Item, send);
             break;
         case 'submit':
-            await handleSubmit(board.Item, JSON.parse(event['body'])['card'], JSON.parse(event['body'])["players"][connectionId]);
+            await handleSubmit(board.Item, JSON.parse(event['body'])['card'], board.Item["players"][connectionId]);
             board = await docClient.get({TableName: "boards", Key: {"boardId": connection.Item.boardId}}).promise();
             await updateDisplay(board.Item, send);
             break;
