@@ -38,7 +38,7 @@ module.exports = async function handleSubmit(board, card, player) {
     let params = {
         TableName: 'boards',
         Key: {
-            "boardId": board.Item.boardId
+            "boardId": board.boardId
         },
 
         UpdateExpression: "set #a.#b = :p, add #d.#w :c",
