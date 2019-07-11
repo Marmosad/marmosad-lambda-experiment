@@ -27,6 +27,7 @@ exports.handler = function (event, context, callback) {
         }
         docClient.batchGet(cardPackQuery).promise().then(async (data) => {
             cardPacks = data;
+            let ids = [];
             let cards = [];
             let toFetch = [];
             for (let i = 0; i < event.numCards; i++) {
@@ -41,13 +42,13 @@ exports.handler = function (event, context, callback) {
                         "cardType": event.cardType
                     }
                 }).promise());
-                cards.push([cardPack, cardId]);
+                ids.push([cardPack, cardId]);
             }
 
             cards = await Promise.all(toFetch);
             cards = cards.map((card, index) => {
-                console.log(cards[index]);
-                return {...card['Item'], "cardPack": cards[index][0]}
+                console.log(ids[index]);
+                return {...card['Item'], "cardPack": ids[index][0]}
             });
             console.log(cards);
             let updateBoard = {

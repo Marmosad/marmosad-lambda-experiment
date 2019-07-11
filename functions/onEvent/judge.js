@@ -19,6 +19,7 @@ module.exports = async function handleJudge(board, card, player) {
 
     let toPlay = -1;
     for (let i in player.hand) {
+        console.log(player.hand[i].cardPack, card.cardPack, player.hand.cardId, card.cardI);
         if (player.hand[i].cardPack === card.cardPack && player.hand.cardId === card.cardId) {
             toPlay = i;
         }

@@ -13,7 +13,7 @@ module.exports = async function handleStart(board) {
 
     for (let player in players) {
         let params = {
-            FunctionName: 'draw',
+            FunctionName: 'marmosad_serverless_draw',
             InvocationType: 'RequestResponse',
             Payload: JSON.stringify({
                 "boardId": board['Item'].boardId,
