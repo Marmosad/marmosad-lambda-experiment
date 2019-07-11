@@ -40,9 +40,8 @@ module.exports = async function handleSubmit(board, card, player) {
         Key: {
             "boardId": board.boardId
         },
-
-        UpdateExpression: "set #a.#b = :p, add #d.#w :c",
-        expressionAttributeNames: {
+        UpdateExpression: "set #a.#b = :p, #d.#w = list_append(#d.#w, :c)",
+        ExpressionAttributeNames: {
             '#a': 'players',
             '#b': player.connectionId,
             '#d': 'display',
