@@ -15,16 +15,16 @@ module.exports = async function handleSubmit(board, card, player) {
     if (board.state !== 1) {
         console.log("not the right phase")
     }
-    console.log("started handling submit event: ", card, player);
     let playedCard = {};
+
     let toPlay = -1;
-    console.log(player.hand);
-    for (let i in player.hand){
-        console.log(i, card, player.hand[i]);
-        if (player.hand[i].cardPack === card.cardPack && player.hand.cardId === card.cardId) {
+    for (let i in player.hand) {
+        console.log(player.hand[i].cardPack, card.cardPack, player.hand[i].cardId, card.cardId);
+        if (player.hand[i].cardPack === card.cardPack && player.hand[i].cardId === card.cardId) {
             toPlay = i;
         }
     }
+
     console.log("toplay", toPlay);
     if (toPlay >= 0) {
         playedCard = player.hand[toPlay];
