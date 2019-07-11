@@ -49,7 +49,7 @@ module.exports = async function handleSubmit(board, card, player) {
         },
         ExpressionAttributeValues: {
             ":p": player,
-            ":c": playedCard
+            ":c": [playedCard]
         },
         ReturnValues: "UPDATED_NEW"
     };
