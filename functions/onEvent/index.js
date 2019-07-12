@@ -116,7 +116,7 @@ async function join(event) {
                 "played": false
             },
             ":i": 1,
-            ":s": {"name": connection.name, "score": 0, "isCurrentJudge": false}
+            ":s": [{"name": connection.name, "score": 0, "isCurrentJudge": false}]
         },
         ReturnValues: "UPDATED_NEW"
     };
