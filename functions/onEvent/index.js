@@ -13,7 +13,75 @@ let send = async (connectionId, data) => {
     await apigwManagementApi.postToConnection({ConnectionId: connectionId, Data: data}).promise();
 };
 
-async function extracted(event) {
+
+exports.handler = async (event) => {
+    console.log("handling: ", event);
+
+    //init api management
+    apigwManagementApi = new AWS.ApiGatewayManagementApi({
+        apiVersion: '2018-11-29',
+        endpoint: event.requestContext.domainName + '/' + event.requestContext.stage
+    });
+
+    let gameEvent = JSON.parse(event['body'])['action'];
+
+    if (gameEvent === 'join') {
+        return await join(event);
+    }
+
+    const connectionId = event['requestContext']['connectionId'];
+    let connection = await docClient.get({TableName: "connections", Key: {"connectionId": connectionId}}).promise();
+    let board = await docClient.get({TableName: "boards", Key: {"boardId": connection.Item.boardId}}).promise();
+    console.log("current game event, ", gameEvent);
+
+    switch (gameEvent) {
+        case 'start':
+            await handleStart(board);
+            board = await docClient.get({
+                TableName: "boards",
+                Key: {"boardId": connection.Item.boardId},
+                "ConsistentRead": true
+            }).promise();
+            await updateDisplay(board.Item, send);
+            break;
+        case 'chat':
+            await handleChat(board.Item, send, JSON.parse(event['body'])['message'], connectionId);
+            break;
+        case 'nudge':
+            board = await docClient.get({
+                TableName: "boards",
+                Key: {"boardId": connection.Item.boardId},
+                "ConsistentRead": true
+            }).promise();
+            await updateDisplay(board.Item, send);
+            break;
+        case 'submit':
+            await handleSubmit(board.Item, JSON.parse(event['body'])['card'], board.Item["players"][connectionId]);
+            board = await docClient.get({
+                TableName: "boards",
+                Key: {"boardId": connection.Item.boardId},
+                "ConsistentRead": true
+            }).promise();
+            await updateDisplay(board.Item, send);
+            break;
+        case 'judge':
+            await handleJudge(board.Item, JSON.parse(event['body'])['card'], connection.Item.boardId);
+            board = await docClient.get({
+                TableName: "boards",
+                Key: {"boardId": connection.Item.boardId},
+                "ConsistentRead": true
+            }).promise();
+            await updateDisplay(board.Item, send);
+            break;
+        default:
+            break;
+    }
+
+    console.log("completed event handling");
+    return {}
+};
+
+async function join(event) {
 //add connection first
     const input = JSON.parse(event['body']);
     const connection = {
@@ -34,18 +102,21 @@ async function extracted(event) {
             "boardId": board.Item.boardId
         },
 
-        UpdateExpression: "set #a.#b = :p, #n = #n + :i",
+        UpdateExpression: "set #a.#b = :p, #n = #n + :i, #d.#s = list_append(#d.#s, :s)",
         ExpressionAttributeNames: {
             '#a': 'players',
             '#b': connection.connectionId,
-            '#n': "numberOfPlayers"
+            '#n': "numberOfPlayers",
+            '#d': "display",
+            '#s': "score"
         },
         ExpressionAttributeValues: {
             ":p": {
                 'name': connection.name, 'hand': [], "connectionId": connection.connectionId,
                 "played": false
             },
-            ":i": 1
+            ":i": 1,
+            ":s": {"name": connection.name, "score": 0, "isCurrentJudge": false}
         },
         ReturnValues: "UPDATED_NEW"
     };
@@ -56,53 +127,3 @@ async function extracted(event) {
     return {};
 }
 
-exports.handler = async (event) => {
-    console.log("handling: ", event);
-
-    //init api management
-    apigwManagementApi = new AWS.ApiGatewayManagementApi({
-        apiVersion: '2018-11-29',
-        endpoint: event.requestContext.domainName + '/' + event.requestContext.stage
-    });
-
-    let gameEvent = JSON.parse(event['body'])['action'];
-
-    if (gameEvent === 'join') {
-        return await extracted(event);
-    }
-
-    const connectionId = event['requestContext']['connectionId'];
-    let connection = await docClient.get({TableName: "connections", Key: {"connectionId": connectionId}}).promise();
-    let board = await docClient.get({TableName: "boards", Key: {"boardId": connection.Item.boardId}}).promise();
-    console.log("current game event, ", gameEvent);
-
-    switch (gameEvent) {
-        case 'start':
-            await handleStart(board);
-            board = await docClient.get({TableName: "boards", Key: {"boardId": connection.Item.boardId}}).promise();
-            await updateDisplay(board.Item, send);
-            break;
-        case 'chat':
-            await handleChat(board.Item, send, JSON.parse(event['body'])['message'], connectionId);
-            break;
-        case 'nudge':
-            board = await docClient.get({TableName: "boards", Key: {"boardId": connection.Item.boardId}}).promise();
-            await updateDisplay(board.Item, send);
-            break;
-        case 'submit':
-            await handleSubmit(board.Item, JSON.parse(event['body'])['card'], board.Item["players"][connectionId]);
-            board = await docClient.get({TableName: "boards", Key: {"boardId": connection.Item.boardId}}).promise();
-            await updateDisplay(board.Item, send);
-            break;
-        case 'judge':
-            await handleJudge(board.Item, JSON.parse(event['body'])['card'], connection.Item.boardId);
-            board = await docClient.get({TableName: "boards", Key: {"boardId": connection.Item.boardId}}).promise();
-            await updateDisplay(board.Item, send);
-            break;
-        default:
-            break;
-    }
-
-    console.log("completed event handling");
-    return {}
-};

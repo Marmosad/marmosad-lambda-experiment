@@ -14,7 +14,7 @@ exports.handler = async(event) => {
         }
     }
     const board = {
-        display: { scoreBoard: [], blackCard: {}, whiteCards: []},
+        display: { score: [], blackCard: {}, whiteCards: []},
         boardId: String(uuid4()),
         state: 0,
         cardPacks: docClient.createSet(input.cardPacks),
