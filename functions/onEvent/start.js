@@ -65,6 +65,7 @@ module.exports = async function handleStart(board) {
         if (err) {
             throw err;
         } else {
+            let [i, nextJudge] = pickJudge(board.Item.players, board.Item.currentJudge)
             console.log("black card drawn:", JSON.parse(data.Payload));
             let params = {
                 TableName: 'boards',
@@ -75,13 +76,16 @@ module.exports = async function handleStart(board) {
                     '#a': 'display',
                     '#b': "blackCard",
                     '#s': 'state',
-                    '#j': 'currentJudge'
+                    '#j': 'currentJudge',
+                    '#sc': 'score',
+                    "#i": "isCurrentJudge"
                 },
-                UpdateExpression: "set #a.#b = :c, #s = :s, #j = :j",
+                UpdateExpression: "set #a.#b = :c, #s = :s, #j = :j, #a.#sc["+ i +"].#i = :true",
                 ExpressionAttributeValues: {
                     ":c": JSON.parse(data.Payload)[0],
+                    ":true": true,
                     ":s": 1,
-                    ":j": pickJudge(board.Item.players, board.Item.currentJudge)
+                    ":j": nextJudge
                 },
                 ReturnValues: "UPDATED_NEW"
             };
@@ -107,9 +111,10 @@ function pickJudge(players, currentJudge) {
     }
 
     if (i === playerIterator.length)
-        nextJudge = playerIterator[0];
+        i = 0;
     else
-        nextJudge = playerIterator[i + 1];
+        i = i + 1;
+    nextJudge = playerIterator[i];
     console.log(playerIterator, nextJudge);
-    return nextJudge
+    return [i, nextJudge]
 }
