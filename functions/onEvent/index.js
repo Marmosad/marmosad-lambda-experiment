@@ -101,8 +101,7 @@ async function join(event) {
         Key: {
             "boardId": board.Item.boardId
         },
-
-        UpdateExpression: "set #a.#b = :p, #n = #n + :i, #d.#s = list_append(#d.#s, :s)",
+        UpdateExpression: "set #a.#b = :p, #n = #n + :i, #d.#s.#b = :s",
         ExpressionAttributeNames: {
             '#a': 'players',
             '#b': connection.connectionId,
@@ -116,7 +115,7 @@ async function join(event) {
                 "played": false
             },
             ":i": 1,
-            ":s": [{"name": connection.name, "score": 0, "isCurrentJudge": false}]
+            ":s": {"name": connection.name, "score": 0, "isCurrentJudge": false}
         },
         ReturnValues: "UPDATED_NEW"
     };

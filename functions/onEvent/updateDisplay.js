@@ -9,6 +9,12 @@ module.exports = async function updateDisplay(board, send) {
             "display": board.display,
             "currentJudge": board.currentJudge
         };
+        // Strip out connection Id
+        let scoreList = [];
+        for (let score in displayObject.display.score) {
+            scoreList.push(score)
+        }
+        displayObject.display.score=scoreList;
         updatePromises.push(send(board.players[id].connectionId, JSON.stringify(displayObject)))
     }
     await Promise.all(updatePromises);

@@ -29,6 +29,7 @@ module.exports = async function handleSubmit(board, card, player) {
     if (toPlay >= 0) {
         playedCard = player.hand[toPlay];
         player.hand.splice(toPlay, 1);
+        playedCard.owner = player.connectionId;
     }
     else
         return;

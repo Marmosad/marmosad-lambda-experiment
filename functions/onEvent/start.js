@@ -2,7 +2,7 @@ let AWS = require('aws-sdk');
 AWS.config.update({region: 'us-east-1'});
 const docClient = new AWS.DynamoDB.DocumentClient();
 let lambda = new AWS.Lambda();
-
+let pickJudge = require('./utils');
 module.exports = async function handleStart(board) {
     let players = board['Item']['players'];
     let updatePromises = [];
@@ -65,7 +65,7 @@ module.exports = async function handleStart(board) {
         if (err) {
             throw err;
         } else {
-            let [i, nextJudge] = pickJudge(board.Item.players, board.Item.currentJudge)
+            let [i, nextJudge] = pickJudge(board.Item.players, board.Item.currentJudge);
             console.log("black card drawn:", JSON.parse(data.Payload));
             let params = {
                 TableName: 'boards',
@@ -80,7 +80,7 @@ module.exports = async function handleStart(board) {
                     '#sc': 'score',
                     "#i": "isCurrentJudge"
                 },
-                UpdateExpression: "set #a.#b = :c, #s = :s, #j = :j, #a.#sc["+ i +"].#i = :true",
+                UpdateExpression: "set #a.#b = :c, #s = :s, #j = :j, #a.#sc[" + i + "].#i = :true",
                 ExpressionAttributeValues: {
                     ":c": JSON.parse(data.Payload)[0],
                     ":true": true,
@@ -101,20 +101,3 @@ module.exports = async function handleStart(board) {
 };
 
 
-function pickJudge(players, currentJudge) {
-    console.log(players);
-    let playerIterator = Object.keys(players);
-    let nextJudge;
-    let i = 0;
-    while (currentJudge !== players[playerIterator[i]] && i < playerIterator.length) {
-        i++;
-    }
-
-    if (i === playerIterator.length)
-        i = 0;
-    else
-        i = i + 1;
-    nextJudge = playerIterator[i];
-    console.log(playerIterator, nextJudge);
-    return [i, nextJudge]
-}
