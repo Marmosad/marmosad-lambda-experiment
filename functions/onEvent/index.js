@@ -65,7 +65,7 @@ exports.handler = async (event) => {
             await updateDisplay(board.Item, send);
             break;
         case 'judge':
-            await handleJudge(board.Item, JSON.parse(event['body'])['card'], connection.Item.boardId);
+            await handleJudge(board.Item, JSON.parse(event['body'])['card'], connectionId);
             board = await docClient.get({
                 TableName: "boards",
                 Key: {"boardId": connection.Item.boardId},
