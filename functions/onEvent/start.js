@@ -98,8 +98,6 @@ module.exports = async function handleStart(board) {
     }).promise());
 
     await Promise.all(updatePromises);
-
-    console.log('new player object on board', board, players)
 };
 
 
