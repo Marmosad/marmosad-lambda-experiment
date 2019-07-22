@@ -46,7 +46,6 @@ module.exports = async function handleStart(board) {
                         ReturnValues: "UPDATED_NEW"
                     };
 
-                    console.log('new player object on board', board, players);
                     await docClient.update(params).promise();
                 }
             }).promise());

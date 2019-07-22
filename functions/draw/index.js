@@ -22,7 +22,9 @@ exports.handler = function (event, context, callback) {
                 }
             }
         };
-        for (let cp of board.Item.cardPacks['values']) {
+        console.log(data);
+        console.log(JSON.stringify(board.Item.cardpacks));
+        for (let cp of board.Item.cardPacks) {
             cardPackQuery.RequestItems.cardPacks.Keys.push({"cardPack": cp})
         }
         docClient.batchGet(cardPackQuery).promise().then(async (data) => {
