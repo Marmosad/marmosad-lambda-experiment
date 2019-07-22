@@ -23,7 +23,7 @@ exports.handler = function (event, context, callback) {
             }
         };
         console.log(data);
-        console.log(JSON.stringify(board.Item.cardpacks));
+        console.log(JSON.stringify(board.Item.cardPacks));
         for (let cp of board.Item.cardPacks) {
             cardPackQuery.RequestItems.cardPacks.Keys.push({"cardPack": cp})
         }
@@ -35,7 +35,7 @@ exports.handler = function (event, context, callback) {
             for (let i = 0; i < event.numCards; i++) {
                 let [cardPack, cardId] = genCard(cardPacks.Responses.cardPacks, board.Item.drawnCards, event.cardType);
 
-                board.Item.drawnCards[cardPack][event.cardType == "whiteCard" ? "whiteCards" : "blackCards"]['values'];
+                board.Item.drawnCards[cardPack][event.cardType == "whiteCard" ? "whiteCards" : "blackCards"];
 
                 toFetch.push(docClient.get({
                     TableName: cardPack,
@@ -89,7 +89,7 @@ exports.handler = function (event, context, callback) {
 
 const genCard = (cp, drawn, cardType) => {
     const cpIndex = Math.floor(Math.random() * cp.length);
-    const drawnSet = new Set(drawn[cp[cpIndex]['cardPack']][cardType == "whiteCard" ? "whiteCards" : "blackCards"]['values']);
+    const drawnSet = new Set(drawn[cp[cpIndex]['cardPack']][cardType == "whiteCard" ? "whiteCards" : "blackCards"]);
     let card = Math.floor(Math.random() * cp[cpIndex][cardType == "whiteCard" ? "whiteCount" : "blackCount"]) + 1;
     while (drawnSet.has(card)) {
         card++;
