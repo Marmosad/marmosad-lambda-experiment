@@ -16,6 +16,8 @@ module.exports = async function handleJudge(board, card, player) {
         console.log("a phantom played this card")
     }
 
+    console.log(card.owner);
+
     let params = {
         TableName: 'boards',
         Key: {
