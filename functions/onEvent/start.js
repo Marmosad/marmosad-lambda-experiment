@@ -12,43 +12,45 @@ module.exports = async function handleStart(board) {
     }
 
     for (let player in players) {
-        let params = {
-            FunctionName: 'marmosad_serverless_draw',
-            InvocationType: 'RequestResponse',
-            Payload: JSON.stringify({
-                "boardId": board['Item'].boardId,
-                "cardType": "whiteCard",
-                "numCards": 7
-            })
-        };
-        updatePromises.push(lambda.invoke(params, async function (err, data) {
-            if (err) {
-                throw err;
-            } else {
-                console.log(data);
-                players[player].hand = JSON.parse(data.Payload);
+        if (players.hasOwnProperty(player)) {
+            let params = {
+                FunctionName: 'marmosad_serverless_draw',
+                InvocationType: 'RequestResponse',
+                Payload: JSON.stringify({
+                    "boardId": board['Item'].boardId,
+                    "cardType": "whiteCard",
+                    "numCards": 7
+                })
+            };
+            updatePromises.push(lambda.invoke(params, async function (err, data) {
+                if (err) {
+                    throw err;
+                } else {
+                    console.log(data);
+                    players[player].hand = JSON.parse(data.Payload);
 
-                let params = {
-                    TableName: 'boards',
-                    Key: {
-                        "boardId": board.Item.boardId
-                    },
-                    ExpressionAttributeNames: {
-                        '#a': 'players',
-                        '#b': player,
-                        '#c': "hand"
-                    },
-                    UpdateExpression: "set #a.#b.#c = :p",
-                    ExpressionAttributeValues: {
-                        ":p": players[player].hand
-                    },
-                    ReturnValues: "UPDATED_NEW"
-                };
+                    let params = {
+                        TableName: 'boards',
+                        Key: {
+                            "boardId": board.Item.boardId
+                        },
+                        ExpressionAttributeNames: {
+                            '#a': 'players',
+                            '#b': player,
+                            '#c': "hand"
+                        },
+                        UpdateExpression: "set #a.#b.#c = :p",
+                        ExpressionAttributeValues: {
+                            ":p": players[player].hand
+                        },
+                        ReturnValues: "UPDATED_NEW"
+                    };
 
-                console.log('new player object on board', board, players);
-                await docClient.update(params).promise();
-            }
-        }).promise());
+                    console.log('new player object on board', board, players);
+                    await docClient.update(params).promise();
+                }
+            }).promise());
+        }
     }
 
     let params = {
