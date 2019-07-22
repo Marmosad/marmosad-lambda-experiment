@@ -46,9 +46,9 @@ module.exports = async function handleStart(board) {
                         ReturnValues: "UPDATED_NEW"
                     };
 
-                    await docClient.update(params).promise();
+                    return docClient.update(params).promise();
                 }
-            }).promise());
+            }));
         }
     }
 
