@@ -3,8 +3,8 @@ AWS.config.update({region: 'us-east-1'});
 const docClient = new AWS.DynamoDB.DocumentClient();
 
 module.exports = async function handleJudge(board, card, player) {
-    if (board.currentJudge !== player.connectionId || card.owner !== board.currentJudge) {
-        console.log('None judge tried to judge', board.currentJudge !== player.connectionId, card.owner !== board.currentJudge);
+    if (board.currentJudge !== player || card.owner === board.currentJudge) {
+        console.log('None judge tried to judge', board.currentJudge !== player.connectionId, card.owner === board.currentJudge);
         return;
     }
 
