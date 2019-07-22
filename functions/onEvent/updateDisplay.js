@@ -7,7 +7,7 @@ module.exports = async function updateDisplay(board, send) {
             "gameEvent": "update",
             "hand": board.players[id].hand,
             "display": board.display,
-            "currentJudge": board.currentJudge
+            "currentJudge": (board.currentJudge === id)
         };
         // Strip out connection Id
         let scoreList = [];
