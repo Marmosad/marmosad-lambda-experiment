@@ -78,9 +78,10 @@ module.exports = async function handleStart(board) {
                     '#s': 'state',
                     '#j': 'currentJudge',
                     '#sc': 'score',
-                    "#i": "isCurrentJudge"
+                    "#i": "isCurrentJudge",
+                    "#nj": nextJudge
                 },
-                UpdateExpression: "set #a.#b = :c, #s = :s, #j = :j, #a.#sc[" + i + "].#i = :true",
+                UpdateExpression: "set #a.#b = :c, #s = :s, #j = :j, #a.#sc.#nj.#i = :true",
                 ExpressionAttributeValues: {
                     ":c": JSON.parse(data.Payload)[0],
                     ":true": true,
