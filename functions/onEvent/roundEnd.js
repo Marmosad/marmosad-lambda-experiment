@@ -10,7 +10,7 @@ module.exports = async function roundEnd(board) {
         FunctionName: 'marmosad_serverless_draw',
         InvocationType: 'RequestResponse',
         Payload: JSON.stringify({
-            "boardId": board['Item'].boardId,
+            "boardId": board.boardId,
             "cardType": "whiteCard",
             "numCards": board.numberOfPlayers - 1
         })
