@@ -15,11 +15,7 @@ module.exports = async function roundEnd(board) {
             "numCards": board.numberOfPlayers - 1
         })
     };
-    let cards = await lambda.invoke(params, async function (err, data) {
-        if (err)
-            throw err;
-        return JSON.parse(data.Payload);
-    }).promise();
+    let cards = JSON.parse((await lambda.invoke(params).promise()).Payload);
 
     console.log(cards);
 
