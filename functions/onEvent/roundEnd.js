@@ -35,7 +35,7 @@ module.exports = async function roundEnd(board) {
             "boardId": board.boardId
         },
 
-        UpdateExpression: "set #d.#b = :b, #d.#w = :w, #p = :p, #s = :score, #c = :c",
+        UpdateExpression: "set #d.#b = :b, #d.#w = :w, #p = :p, #s = :s, #c = :c",
         ExpressionAttributeNames: {
             '#p': "players",
             '#d': "display",
@@ -46,7 +46,7 @@ module.exports = async function roundEnd(board) {
         },
         ExpressionAttributeValues: {
             ":p": board.players,
-            ":score": board.score,
+            ":s": board.display.score,
             ":b": {},
             ":w": [],
             ":c": nextJudge
