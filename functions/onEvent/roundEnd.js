@@ -35,7 +35,7 @@ module.exports = async function roundEnd(board) {
             "boardId": board.boardId
         },
 
-        UpdateExpression: "set #d.#b = :b #d.#w = :w #p = :p #s = :score #c = :c",
+        UpdateExpression: "set #d.#b = :b, #d.#w = :w, #p = :p, #s = :score, #c = :c",
         ExpressionAttributeNames: {
             '#p': "players",
             '#d': "display",
