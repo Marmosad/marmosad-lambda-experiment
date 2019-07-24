@@ -18,10 +18,10 @@ module.exports = async function roundEnd(board) {
     let cards = await lambda.invoke(params, async function (err, data) {
         if (err)
             throw err;
-        console.log(data);
-        return data
+        console.log(JSON.parse(data.Payload));
+        return JSON.parse(data.Payload);
     }).promise();
-    console.log(cards);
+    console.log(JSON.parse(data.Payload));
 
     for (let player in board.players) {
         if (board.players.hasOwnProperty(player) && board.players[player].hand.length < 7 && board.display.score[player].isCurrentJudge === false)
