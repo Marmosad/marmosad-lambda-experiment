@@ -8,6 +8,8 @@ const handleChat = require('./chat');
 const updateDisplay = require('./updateDisplay');
 const handleSubmit = require('./submit');
 const handleJudge = require('./judge');
+const roundEnd = require('./roundEnd');
+
 let apigwManagementApi;
 let send = async (connectionId, data) => {
     await apigwManagementApi.postToConnection({ConnectionId: connectionId, Data: data}).promise();
@@ -66,6 +68,18 @@ exports.handler = async (event) => {
             break;
         case 'judge':
             await handleJudge(board.Item, JSON.parse(event['body'])['card'], connectionId);
+            board = await docClient.get({
+                TableName: "boards",
+                Key: {"boardId": connection.Item.boardId},
+                "ConsistentRead": true
+            }).promise();
+            await updateDisplay(board.Item, send);
+            board = await docClient.get({
+                TableName: "boards",
+                Key: {"boardId": connection.Item.boardId},
+                "ConsistentRead": true
+            }).promise();
+            await roundEnd(board.Item);
             board = await docClient.get({
                 TableName: "boards",
                 Key: {"boardId": connection.Item.boardId},

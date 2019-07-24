@@ -93,7 +93,7 @@ module.exports = async function handleStart(board) {
             };
 
             console.log('new player object on board', board, players);
-            await docClient.update(params).promise();
+            return docClient.update(params).promise();
         }
     }).promise());
 
