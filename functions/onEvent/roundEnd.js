@@ -37,7 +37,7 @@ module.exports = async function roundEnd(board) {
     }
 
     let [i, nextJudge] = pickJudge(board.players, board.currentJudge);
-
+    console.log(board.players[nextJudge]);
     board.display.score[nextJudge].isCurrentJudge = true;
 
 
