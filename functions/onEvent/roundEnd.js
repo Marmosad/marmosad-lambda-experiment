@@ -60,7 +60,7 @@ module.exports = async function roundEnd(board) {
         ExpressionAttributeValues: {
             ":p": board.players,
             ":s": board.display.score,
-            ":b": blackCard,
+            ":b": blackCard[0],
             ":w": [],
             ":c": nextJudge
         },
