@@ -17,17 +17,30 @@ module.exports = async function roundEnd(board) {
     };
     let cards = JSON.parse((await lambda.invoke(params).promise()).Payload);
 
+    params = {
+        FunctionName: 'marmosad_serverless_draw',
+        InvocationType: 'RequestResponse',
+        Payload: JSON.stringify({
+            "boardId": board.boardId,
+            "cardType": "blackCard",
+            "numCards": 1
+        })
+    };
+    let blackCard = JSON.parse((await lambda.invoke(params).promise()).Payload);
     console.log(cards);
 
     for (let player in board.players) {
         if (board.players.hasOwnProperty(player) && board.players[player].hand.length < 7 && board.display.score[player].isCurrentJudge === false)
             board.players[player].hand.push(cards.pop());
-        board.players[player].isCurrentJudge = false;
+        board.display.score[player].isCurrentJudge = false;
+        board.players[player].played = false;
     }
 
     let [i, nextJudge] = pickJudge(board.players, board.currentJudge);
 
     board.display.score[nextJudge].isCurrentJudge = true;
+
+
 
     params = {
         TableName: 'boards',
@@ -47,7 +60,7 @@ module.exports = async function roundEnd(board) {
         ExpressionAttributeValues: {
             ":p": board.players,
             ":s": board.display.score,
-            ":b": {},
+            ":b": blackCard,
             ":w": [],
             ":c": nextJudge
         },
