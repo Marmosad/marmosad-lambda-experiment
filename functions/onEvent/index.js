@@ -89,6 +89,7 @@ exports.handler = async (event) => {
             }).promise();
             await updateDisplay(board.Item, send);
             await sendAll(board.Item, {"gameEvent": "loaded"}, send);
+            await sendAll(board.Item, {"gameEvent": "loaded"}, send);
             break;
         default:
             break;
@@ -140,6 +141,7 @@ async function join(event) {
     await docClient.update(params).promise();
     board = await docClient.get({TableName: "boards", Key: {"boardId": connection.boardId}}).promise();
     await updateDisplay(board.Item, send);
+    await sendAll(board.Item, {"gameEvent": "loaded"}, send);
     await sendAll(board.Item, {"gameEvent": "loaded"}, send);
     return {};
 }
