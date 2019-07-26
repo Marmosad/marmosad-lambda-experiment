@@ -75,7 +75,7 @@ exports.handler = async (event) => {
                 "ConsistentRead": true
             }).promise();
             await updateDisplay(board.Item, send);
-            await sendAll(board.Item, {"gameEvent": "loading"});
+            await sendAll(board.Item, {"gameEvent": "loading"}, send);
             board = await docClient.get({
                 TableName: "boards",
                 Key: {"boardId": connection.Item.boardId},
@@ -88,7 +88,7 @@ exports.handler = async (event) => {
                 "ConsistentRead": true
             }).promise();
             await updateDisplay(board.Item, send);
-            await sendAll(board.Item, {"gameEvent": "loaded"});
+            await sendAll(board.Item, {"gameEvent": "loaded"}, send);
             break;
         default:
             break;
@@ -111,7 +111,7 @@ async function join(event) {
     let board = await docClient.get({TableName: "boards", Key: {"boardId": connection.boardId}}).promise();
     let players = board['Item']['players'];
     players[connection.connectionId] = {'name': connection.name, 'hand': [], connectionId: connection.connectionId};
-    await sendAll(board.Item, {"gameEvent": "loading"});
+    await sendAll(board.Item, {"gameEvent": "loading"}, send);
     //update params
     let params = {
         TableName: 'boards',
@@ -140,7 +140,7 @@ async function join(event) {
     await docClient.update(params).promise();
     board = await docClient.get({TableName: "boards", Key: {"boardId": connection.boardId}}).promise();
     await updateDisplay(board.Item, send);
-    await sendAll(board.Item, {"gameEvent": "loaded"});
+    await sendAll(board.Item, {"gameEvent": "loaded"}, send);
     return {};
 }
 
