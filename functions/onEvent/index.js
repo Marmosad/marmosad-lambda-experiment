@@ -75,7 +75,7 @@ exports.handler = async (event) => {
                 "ConsistentRead": true
             }).promise();
             await updateDisplay(board.Item, send);
-            await sendAll(board.Item, {"gameEvent": "judging"});
+            await sendAll(board.Item, {"gameEvent": "loading"});
             board = await docClient.get({
                 TableName: "boards",
                 Key: {"boardId": connection.Item.boardId},
@@ -88,7 +88,7 @@ exports.handler = async (event) => {
                 "ConsistentRead": true
             }).promise();
             await updateDisplay(board.Item, send);
-            await sendAll(board.Item, {"gameEvent": "done judging"});
+            await sendAll(board.Item, {"gameEvent": "loaded"});
             break;
         default:
             break;
