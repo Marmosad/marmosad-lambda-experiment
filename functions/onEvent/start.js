@@ -2,7 +2,7 @@ let AWS = require('aws-sdk');
 AWS.config.update({region: 'us-east-1'});
 const docClient = new AWS.DynamoDB.DocumentClient();
 let lambda = new AWS.Lambda();
-let pickJudge = require('./utils');
+let pickJudge = require('./pickJudge');
 module.exports = async function handleStart(board) {
     let players = board['Item']['players'];
     let updatePromises = [];
