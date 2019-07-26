@@ -6,6 +6,7 @@ const sendAll = async (board, msg, send) => {
     }
     await Promise.all(updatePromises);
     console.log('completed msg to all')
+    return {};
 };
 
 module.exports = sendAll;

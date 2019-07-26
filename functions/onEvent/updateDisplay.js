@@ -18,5 +18,6 @@ module.exports = async function updateDisplay(board, send) {
         updatePromises.push(send(board.players[id].connectionId, JSON.stringify(displayObject)))
     }
     await Promise.all(updatePromises);
-    console.log('completed update')
-}
+    console.log('completed update');
+    return {};
+};
