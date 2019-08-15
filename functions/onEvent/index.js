@@ -39,6 +39,7 @@ exports.handler = async (event) => {
 
     switch (gameEvent) {
         case 'start':
+            await sendAll(board.Item, {"gameEvent": "loading"}, send);
             await handleStart(board);
             board = await docClient.get({
                 TableName: "boards",
@@ -46,6 +47,7 @@ exports.handler = async (event) => {
                 "ConsistentRead": true
             }).promise();
             await updateDisplay(board.Item, send);
+            await sendAll(board.Item, {"gameEvent": "loaded"}, send);
             break;
         case 'chat':
             await handleChat(board.Item, send, JSON.parse(event['body'])['message'], connectionId);
@@ -89,10 +91,17 @@ exports.handler = async (event) => {
             }).promise();
             await updateDisplay(board.Item, send);
             await sendAll(board.Item, {"gameEvent": "loaded"}, send);
-            await sendAll(board.Item, {"gameEvent": "loaded"}, send);
             break;
         default:
             break;
+
+    }
+
+    console.log("check for game termination");
+    for (let id in board.Item.players) {
+        if (board.Item.display.score[id] >= 3) {
+            await sendAll(board.Item, {"gameEvent": "end", "victor": board.Item.players[id]}, send);
+        }
     }
 
     console.log("completed event handling");
@@ -141,7 +150,6 @@ async function join(event) {
     await docClient.update(params).promise();
     board = await docClient.get({TableName: "boards", Key: {"boardId": connection.boardId}}).promise();
     await updateDisplay(board.Item, send);
-    await sendAll(board.Item, {"gameEvent": "loaded"}, send);
     await sendAll(board.Item, {"gameEvent": "loaded"}, send);
     return {};
 }

@@ -19,13 +19,11 @@ module.exports = async function handleSubmit(board, card, player) {
 
     let toPlay = -1;
     for (let i in player.hand) {
-        console.log(player.hand[i].cardPack, card.cardPack, player.hand[i].cardId, card.cardId);
         if (player.hand[i].cardPack === card.cardPack && player.hand[i].cardId === card.cardId) {
             toPlay = i;
         }
     }
 
-    console.log("toplay", toPlay);
     if (toPlay >= 0) {
         playedCard = player.hand[toPlay];
         player.hand.splice(toPlay, 1);
@@ -55,7 +53,6 @@ module.exports = async function handleSubmit(board, card, player) {
         ReturnValues: "UPDATED_NEW"
     };
 
-    console.log(player);
     await docClient.update(params).promise();
 
 };

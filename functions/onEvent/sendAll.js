@@ -5,7 +5,7 @@ const sendAll = async (board, msg, send) => {
         updatePromises.push(send(board.players[id].connectionId, JSON.stringify(msg)))
     }
     await Promise.all(updatePromises);
-    console.log('completed msg to all')
+    console.log('completed msg to all');
     return {};
 };
 
