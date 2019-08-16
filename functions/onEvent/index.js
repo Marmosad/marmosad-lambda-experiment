@@ -29,7 +29,9 @@ exports.handler = async (event) => {
     let gameEvent = JSON.parse(event['body'])['action'];
 
     if (gameEvent === 'join') {
-        return await join(event);
+        await join(event);
+        console.log('Handled join event');
+        return
     }
 
     const connectionId = event['requestContext']['connectionId'];
