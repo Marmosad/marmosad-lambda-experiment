@@ -7,7 +7,8 @@ module.exports = async function updateDisplay(board, send) {
             "gameEvent": "update",
             "hand": board.players[id].hand,
             "display": board.display,
-            "currentJudge": (board.currentJudge === id)
+            "currentJudge": (board.currentJudge === id),
+            "gameState": board.state
         };
         // Strip out connection Id
         let scoreList = [];
@@ -15,7 +16,7 @@ module.exports = async function updateDisplay(board, send) {
             scoreList.push(displayObject.display.score[player])
         }
         displayObject.display.score=scoreList;
-        updatePromises.push(send(board.players[id].connectionId, JSON.stringify(displayObject)))
+        updatePromises.push(send(board.players[id].connectionId, JSON.stringify(displayObject)));
     }
     await Promise.all(updatePromises);
     console.log('completed update');

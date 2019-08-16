@@ -119,9 +119,11 @@ async function join(event) {
     // add connection
     await docClient.put({TableName: "connections", Item: JSON.parse(JSON.stringify(connection))}).promise();
     let board = await docClient.get({TableName: "boards", Key: {"boardId": connection.boardId}}).promise();
+    if (board['Item'].state === 0) {
+        return {};
+    }
     let players = board['Item']['players'];
     players[connection.connectionId] = {'name': connection.name, 'hand': [], connectionId: connection.connectionId};
-    await sendAll(board.Item, {"gameEvent": "loading"}, send);
     //update params
     let params = {
         TableName: 'boards',
@@ -150,7 +152,6 @@ async function join(event) {
     await docClient.update(params).promise();
     board = await docClient.get({TableName: "boards", Key: {"boardId": connection.boardId}}).promise();
     await updateDisplay(board.Item, send);
-    await sendAll(board.Item, {"gameEvent": "loaded"}, send);
     return {};
 }
 

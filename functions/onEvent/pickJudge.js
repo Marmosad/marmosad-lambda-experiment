@@ -14,5 +14,5 @@ module.exports = function pickJudge(players, currentJudge) {
         i = i + 1;
     nextJudge = playerIterator[i];
     console.log(playerIterator, nextJudge);
-    return [i, nextJudge]
+    return [currentJudge, nextJudge]
 };

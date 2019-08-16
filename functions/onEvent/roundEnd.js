@@ -32,13 +32,13 @@ module.exports = async function roundEnd(board) {
     for (let player in board.players) {
         if (board.players.hasOwnProperty(player) && board.players[player].hand.length < 7 && board.display.score[player].isCurrentJudge === false)
             board.players[player].hand.push(cards.pop());
-        board.display.score[player].isCurrentJudge = false;
         board.players[player].played = false;
     }
 
-    let [i, nextJudge] = pickJudge(board.players, board.currentJudge);
+    let [prevJudge, nextJudge] = pickJudge(board.players, board.currentJudge);
     console.log(board.players[nextJudge]);
     board.display.score[nextJudge].isCurrentJudge = true;
+    board.display.score[board.currentJudge].isCurrentJudge = false;
 
 
 
