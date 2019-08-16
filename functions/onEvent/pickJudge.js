@@ -2,8 +2,8 @@ module.exports = function pickJudge(players, currentJudge) {
     let playerIterator = Object.keys(players);
     let nextJudge;
     let i = 0;
+    console.log("Current judge ", currentJudge," picking judge from: ", playerIterator)
     while (currentJudge !== playerIterator[i] && i < playerIterator.length) {
-        console.log(playerIterator[i], currentJudge);
         i++;
     }
 
@@ -13,6 +13,5 @@ module.exports = function pickJudge(players, currentJudge) {
     else
         i = i + 1;
     nextJudge = playerIterator[i];
-    console.log(playerIterator, nextJudge);
     return [currentJudge, nextJudge]
 };

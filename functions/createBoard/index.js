@@ -5,7 +5,7 @@ const docClient = new AWS.DynamoDB.DocumentClient();
 exports.handler = async(event) => {
     const input = event;
     console.log("board create request: ", input)
-    if (input.playerLimit >= 3 && input.playerLimit <= 6) {
+    if (input.playerLimit <= 3 || input.playerLimit >= 6) {
         return {
             "isBase64Encoded": false,
             "statusCode": 500,
