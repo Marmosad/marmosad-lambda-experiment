@@ -4,7 +4,7 @@ AWS.config.update({ region: 'us-east-1' });
 const docClient = new AWS.DynamoDB.DocumentClient();
 exports.handler = async(event) => {
     const input = event;
-    console.log("board create request: ", input)
+    console.log("board create request: ", input);
     if (input.playerLimit <= 3 || input.playerLimit >= 6) {
         return {
             "isBase64Encoded": false,

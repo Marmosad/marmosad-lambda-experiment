@@ -66,7 +66,7 @@ module.exports = async function handleStart(board) {
         if (err) {
             throw err;
         } else {
-            let [i, nextJudge] = pickJudge(board.Item.players, board.Item.currentJudge);
+            let [i, nextJudge] = pickJudge(board.Item.players, "not_a_real_player");
             console.log("black card drawn:", JSON.parse(data.Payload));
             let params = {
                 TableName: 'boards',
