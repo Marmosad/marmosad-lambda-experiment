@@ -121,7 +121,7 @@ async function join(event) {
     // add connection
     await docClient.put({TableName: "connections", Item: JSON.parse(JSON.stringify(connection))}).promise();
     let board = await docClient.get({TableName: "boards", Key: {"boardId": connection.boardId}}).promise();
-    if (board['Item'].state === 0) {
+    if (board['Item'].state !== 0) {
         return {};
     }
     let players = board['Item']['players'];
