@@ -31,7 +31,7 @@ exports.handler = async (event) => {
     if (gameEvent === 'join') {
         await join(event);
         console.log('Handled join event');
-        return
+        return {}
     }
 
     const connectionId = event['requestContext']['connectionId'];
