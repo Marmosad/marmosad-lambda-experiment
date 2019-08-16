@@ -3,7 +3,8 @@ module.exports = function pickJudge(players, currentJudge) {
     let nextJudge;
     let i = 0;
     console.log("Current judge ", currentJudge," picking judge from: ", playerIterator);
-    while (currentJudge.toString() !== playerIterator[i].toString() && i < playerIterator.length) {
+    // noinspection EqualityComparisonWithCoercionJS
+    while (currentJudge != playerIterator[i] && i < playerIterator.length) {
         i++;
     }
 
