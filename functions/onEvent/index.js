@@ -106,9 +106,9 @@ exports.handler = async (event) => {
     }).promise();
 
     console.log("check for game termination");
-    for (let score of board.Item.display.score) {
-        if (score.score >= 1) {
-            await sendAll(board.Item, {"gameEvent": "end", "victor": score.name}, send);
+    for (let id in board.Item.display.score) {
+        if (board.Item.display.score[id].score >= 10) {
+            await sendAll(board.Item, {"gameEvent": "end", "victor": board.Item.display.score[id].name}, send);
         }
     }
 
