@@ -100,7 +100,7 @@ exports.handler = async (event) => {
     }
 
     console.log("check for game termination");
-    for (let id in board.Item.players) {
+    for (let id of board.Item.players) {
         if (board.Item.display.score[id].score >= 3) {
             await sendAll(board.Item, {"gameEvent": "end", "victor": board.Item.players[id].name}, send);
         }
