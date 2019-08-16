@@ -7,12 +7,10 @@ module.exports = function pickJudge(players, currentJudge) {
     while (currentJudge != playerIterator[i] && i < playerIterator.length) {
         i++;
     }
-
+    i++;
     console.log("the next judge index is", i);
     if (i === playerIterator.length)
         i = 0;
-    else
-        i = i + 1;
     nextJudge = playerIterator[i];
     return [currentJudge, nextJudge]
 };
