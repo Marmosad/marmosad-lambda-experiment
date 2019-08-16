@@ -99,11 +99,16 @@ exports.handler = async (event) => {
 
     }
 
+    board = await docClient.get({
+        TableName: "boards",
+        Key: {"boardId": connection.Item.boardId},
+        "ConsistentRead": true
+    }).promise();
+
     console.log("check for game termination");
-    for (let id in board.Item.players) {
-        console.log(board.Item.display);
-        if (board.Item.display.score[id].score >= 1) {
-            await sendAll(board.Item, {"gameEvent": "end", "victor": board.Item.players[id].name}, send);
+    for (let score in board.Item.display.score) {
+        if (score.score >= 1) {
+            await sendAll(board.Item, {"gameEvent": "end", "victor": score.name}, send);
         }
     }
 
