@@ -9,7 +9,7 @@ module.exports = function pickJudge(players, currentJudge) {
     }
     i++;
     console.log("the next judge index is", i);
-    if (i === playerIterator.length)
+    if (i >= playerIterator.length)
         i = 0;
     nextJudge = playerIterator[i];
     return [currentJudge, nextJudge]
