@@ -30,14 +30,12 @@ exports.handler = async (event) => {
 
     if (gameEvent === 'join') {
         await join(event);
-        console.log('Handled join event');
         return {}
     }
 
     const connectionId = event['requestContext']['connectionId'];
     let connection = await docClient.get({TableName: "connections", Key: {"connectionId": connectionId}}).promise();
     let board = await docClient.get({TableName: "boards", Key: {"boardId": connection.Item.boardId}}).promise();
-    console.log("current game event, ", gameEvent);
 
     switch (gameEvent) {
         case 'start':
@@ -105,14 +103,12 @@ exports.handler = async (event) => {
         "ConsistentRead": true
     }).promise();
 
-    console.log("check for game termination");
     for (let id in board.Item.display.score) {
         if (board.Item.display.score[id].score >= 10) {
             await sendAll(board.Item, {"gameEvent": "end", "victor": board.Item.display.score[id].name}, send);
         }
     }
 
-    console.log("completed event handling");
     return {}
 };
 
